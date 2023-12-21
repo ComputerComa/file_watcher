@@ -9,6 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "chokidar": "^3.5.3"
+    "chokidar": "^3.5.3",
+    "discord-webhook-node": "^1.1.8",
+    "pushover-notifications": "^1.2.2"
   }
 }
