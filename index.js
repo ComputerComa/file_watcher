@@ -1,7 +1,8 @@
-var DEVELOP = true;
+var DEVELOP = false;
 var chokidar = require("chokidar");
 const config = require("./config.json")
-console.log(config)
+let status = "startup"
+//console.log(config)
 var Push = require( 'pushover-notifications' )
 const { Webhook } = require('discord-webhook-node');
 const hook = new Webhook(config["discord-webhook-url"]);
@@ -23,39 +24,57 @@ if (DEVELOP) {
       },
   });
 }
+function path_to_url(path){
+  let base_url = "https://proscan.synapselabs.xyz/"
+  let out_path_1 = path.split("\\")
+  //log(out_path_1)
+  let out_path_2 = out_path_1[out_path_1.length - 1]
+  //log(out_path_2)
+return base_url + out_path_2
+}
 
 function PushoverAlert(path){
 log(path)
 }
 
-function DiscordWebhook(path){
+function Build_String(path){
+  let parts = path.split("-")
+}
+
+function DiscordWebhook(path,event){
+  if (event == "added") {
+    let uri_path = path_to_url(path)
+    hook.send(`New transmission recorded.\n Asccess it at ${uri_path}`)
+  }
 log("path")
 }
 
 
+
 function filter(path,event){
+  log(`File Registered @ path ${path}`)
+  if (status == "main"){
 if (path.includes(".mp3")){
-    if (path.includes("Thayer")){
-        if (path.includes(""))
-    log(`File ${path} has been ${event}. With high prirotiy.`)
+    if (path.includes("Thayer_EMS_Paging")){
+
     } else {
-
+      DiscordWebhook(path,event)
     }
-}
-}
+}}}
 
-watcher
-  .on('add', path => filter(path,"added"))
-  .on('change', path => filter(path,"changed"))
-  .on('unlink', path => filter(path,"deleted"));
+  
+
 
 // More possible events.
 watcher
+  .on('add', path => filter(path,"added"))
   .on('error', error => log(`Watcher error: ${error}`))
-  .on('ready', () => log('Initial scan complete. Ready for changes'))
-  .on('raw', (event, path, details) => { // internal
-    log('Raw event info:', event, path, details);
-  });
+  .on('unlink', path => log(`File Deleted {${path}}`))
+  .on('ready', () => {
+  status = "main"
+    log('Initial scan complete. Ready for changes')
+  })
+
 
 
 
